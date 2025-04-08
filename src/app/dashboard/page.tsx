@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebaseConfig";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import {
   BarChart,
   Bar,
@@ -20,14 +20,26 @@ import Header from "@/components/Header";
 
 import "@/app/globals.css";
 
+// Tipagem para Transações
+interface Transaction {
+  id: string;
+  type: "entrada" | "saida";
+  amount: number;
+  date: string;
+}
+
 export default function Dashboard() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [entradas, setEntradas] = useState(0);
-  const [saidas, setSaidas] = useState(0);
-  const [editingTransaction, setEditingTransaction] = useState<any | null>(null); // ⬅️ NOVO
+  const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [entradas, setEntradas] = useState<number>(0);
+  const [saidas, setSaidas] = useState<number>(0);
+  const [editingTransaction, setEditingTransaction] = useState<{
+    id: string;
+    type: "entrada" | "saida";
+    amount: number;
+  } | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -44,13 +56,13 @@ export default function Dashboard() {
 
   const fetchTransactions = async () => {
     if (!user) return;
-    const transactions = await getTransactions();
-    setTransactions(transactions);
+    const data = await getTransactions();
+    setTransactions(data);
 
-    const totalEntradas = transactions
+    const totalEntradas = data
       .filter((t) => t.type === "entrada")
       .reduce((acc, t) => acc + t.amount, 0);
-    const totalSaidas = transactions
+    const totalSaidas = data
       .filter((t) => t.type === "saida")
       .reduce((acc, t) => acc + t.amount, 0);
 
