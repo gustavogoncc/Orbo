@@ -20,7 +20,7 @@
 
 ## 🧪 Tecnologias utilizadas
 
-- [Next.js 14](https://nextjs.org/)
+- [Next.js](https://nextjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Firebase Auth + Firestore](https://firebase.google.com/)
 - [Recharts](https://recharts.org/en-US/) para gráficos
